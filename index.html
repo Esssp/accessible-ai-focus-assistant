@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Focus Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 18px;
+            line-height: 1.6;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #000000;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            color: #000000;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #000000;
+        }
+
+        label {
+            display: block;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            font-size: 18px;
+            padding: 15px;
+            border: 3px solid #000000;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        textarea:focus {
+            outline: 3px solid #0066cc;
+            outline-offset: 2px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 15px 40px;
+            background-color: #0066cc;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 30px;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #0052a3;
+        }
+
+        button:focus {
+            outline: 3px solid #000000;
+            outline-offset: 2px;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .loading {
+            font-size: 20px;
+            color: #0066cc;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .error {
+            background-color: #ffcccc;
+            border: 3px solid #cc0000;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .results {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .section {
+            background-color: #f5f5f5;
+            border: 3px solid #000000;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .step {
+            padding: 10px 0;
+            border-bottom: 1px solid #cccccc;
+        }
+
+        .step:last-child {
+            border-bottom: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            border: 2px solid #000000;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        .session {
+            background-color: #ffffff;
+            border: 2px solid #0066cc;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .session-header {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #0066cc;
+        }
+
+        .priority-high {
+            color: #cc0000;
+            font-weight: bold;
+        }
+
+        .priority-medium {
+            color: #ff8800;
+            font-weight: bold;
+        }
+
+        .priority-low {
+            color: #008800;
+            font-weight: bold;
+        }
+
+        .clear-btn {
+            background-color: #666666;
+            margin-left: 10px;
+        }
+
+        .clear-btn:hover {
+            background-color: #555555;
+        }
+
+        .example-link {
+            color: #0066cc;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+
+        .example-link:hover {
+            color: #0052a3;
+        }
+
+        .example-link:focus {
+            outline: 2px solid #000000;
+            outline-offset: 2px;
+        }
+
+        ul {
+            margin-left: 25px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #000000;
+            color: #ffffff;
+            padding: 8px;
+            text-decoration: none;
+            z-index: 100;
+        }
+
+        .skip-link:focus {
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <main id="main-content">
+        <h1>♿ Accessibility Focus Assistant</h1>
+        <p style="font-size: 20px; margin-bottom: 30px;">
+            Transform complex content into simple, accessible tasks.
+        </p>
+
+        <section aria-label="Input section">
+            <label for="textInput">
+                Paste your content here (meeting notes, emails, instructions):
+            </label>
+            <textarea 
+                id="textInput" 
+                aria-describedby="inputHelp"
+                placeholder="Example: You need to prepare a presentation by Friday..."
+            ></textarea>
+            <p id="inputHelp" style="font-size: 16px; color: #666; margin-bottom: 10px;">
+                Enter any work-related text and we'll make it easier to understand and complete.
+            </p>
+            <a class="example-link" onclick="loadExample()" tabindex="0" role="button" onkeypress="if(event.key==='Enter')loadExample()">
+                Try an example
+            </a>
+            <div>
+                <button id="submitBtn" onclick="processText()">
+                    Make It Accessible
+                </button>
+                <button class="clear-btn" onclick="clearAll()">
+                    Clear
+                </button>
+            </div>
+        </section>
+
+        <div id="loading" class="loading" role="status" aria-live="polite">
+            Processing your content...
+        </div>
+
+        <div id="error" class="error" role="alert" aria-live="assertive"></div>
+
+        <section id="results" class="results" aria-label="Results section">
+            <h2>📋 Your Accessible Workflow</h2>
+
+            <div class="section">
+                <h3>📝 Simple Summary</h3>
+                <div id="simplifiedText"></div>
+            </div>
+
+            <div class="section">
+                <h3>🎧 Audio Script (Read Aloud)</h3>
+                <div id="audioScript"></div>
+            </div>
+
+            <div class="section">
+                <h3>👁️ Visual Steps</h3>
+                <div id="visualSteps"></div>
+            </div>
+
+            <div class="section">
+                <h3>✅ Action Items</h3>
+                <div id="actionItems"></div>
+            </div>
+
+            <div class="section">
+                <h3>🧘 Guided Focus Sessions</h3>
+                <div id="focusSessions"></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:8000/process';
+
+        async function processText() {
+            const textInput = document.getElementById('textInput');
+            const text = textInput.value.trim();
+
+            if (!text) {
+                showError('Please enter some text to process.');
+                return;
+            }
+
+            hideError();
+            hideResults();
+            showLoading();
+            disableSubmit();
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayResults(data);
+                showResults();
+            } catch (error) {
+                showError('Could not connect to the server. Make sure the backend is running on http://localhost:8000');
+                console.error('Error:', error);
+            } finally {
+                hideLoading();
+                enableSubmit();
+            }
+        }
+
+        function displayResults(data) {
+            document.getElementById('simplifiedText').innerHTML = 
+                `<p style="font-size: 18px;">${escapeHtml(data.simplified_text)}</p>`;
+
+            document.getElementById('audioScript').innerHTML = 
+                `<p style="font-size: 18px; font-style: italic;">${escapeHtml(data.audio_narration_script)}</p>`;
+
+            const stepsHtml = data.visual_task_steps
+                .map(step => `<div class="step">${escapeHtml(step)}</div>`)
+                .join('');
+            document.getElementById('visualSteps').innerHTML = stepsHtml;
+
+            const tableHtml = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Task</th>
+                            <th>Owner</th>
+                            <th>Priority</th>
+                            <th>Deadline</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.action_items.map(item => {
+                            const priorityClass = `priority-${item.priority.toLowerCase()}`;
+                            return `
+                            <tr>
+                                <td>${escapeHtml(item.task)}</td>
+                                <td>${escapeHtml(item.owner)}</td>
+                                <td class="${priorityClass}">${escapeHtml(item.priority)}</td>
+                                <td>${escapeHtml(item.deadline)}</td>
+                            </tr>
+                        `}).join('')}
+                    </tbody>
+                </table>
+            `;
+            document.getElementById('actionItems').innerHTML = tableHtml;
+
+            const sessionsHtml = data.guided_focus_sessions.map(session => `
+                <div class="session">
+                    <div class="session-header">
+                        ${escapeHtml(session.session_name)} (${session.duration_minutes} minutes)
+                    </div>
+                    <ul>
+                        ${session.instructions.map(inst => `<li>${escapeHtml(inst)}</li>`).join('')}
+                    </ul>
+                    <p style="margin-top: 10px; font-weight: bold;">
+                        Take a ${session.break_minutes} minute break ☕
+                    </p>
+                </div>
+            `).join('');
+            document.getElementById('focusSessions').innerHTML = sessionsHtml;
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function showResults() {
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function hideResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+
+        function disableSubmit() {
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        function enableSubmit() {
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function loadExample() {
+            const example = `You need to prepare a short presentation explaining the project progress. Include three main points and keep the language simple. Submit the slides by Friday evening. After submission, send a confirmation email to your manager.`;
+            document.getElementById('textInput').value = example;
+            document.getElementById('textInput').focus();
+        }
+
+        function clearAll() {
+            document.getElementById('textInput').value = '';
+            hideResults();
+            hideError();
+            document.getElementById('textInput').focus();
+        }
+
+        document.getElementById('textInput').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                processText();
+            }
+        });
+    </script>
+</body>
+</html>
