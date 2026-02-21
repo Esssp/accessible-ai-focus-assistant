@@ -105,12 +105,7 @@ The tool is designed with universal design principles, ensuring usability for pe
 pip install -r requirements.txt
 ```
 
-2. (Optional) Set AI API key as environment variable:
-```bash
-export AI_API_KEY="your-api-key-here"
-```
-
-3. Start the FastAPI server:
+2. Start the FastAPI server:
 ```bash
 python main.py
 ```
@@ -150,7 +145,6 @@ Example API request:
 ```bash
 curl -X POST http://localhost:8000/process \
   -H "Content-Type: application/json" \
-  -d '{"text": "Your work content here"}'
 ```
 
 ## Future Enhancements
