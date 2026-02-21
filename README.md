@@ -174,7 +174,7 @@ MIT License
 
 ## Team
 
-Built for the AI for Social Good hackathon track.
+Built for the AI for Social Good hackathon track in AMD Slingshot.
 
 ## Acknowledgments
 
